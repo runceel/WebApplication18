@@ -21,20 +21,23 @@ namespace WebApplication18
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    var azConfigSettings = config.Build();
-                    var azConfigConnection = azConfigSettings.GetConnectionString("AppConfig");
-                    if (!string.IsNullOrEmpty(azConfigConnection))
+                    if (context.HostingEnvironment.IsProduction())
                     {
-                        // Use the connection string if it is available.
-                        config.AddAzureAppConfiguration(azConfigConnection);
-                    }
-                    else if (Uri.TryCreate(azConfigSettings["Endpoints:AppConfig"], UriKind.Absolute, out var endpoint))
-                    {
-                        // Use Azure Active Directory authentication.
-                        config.AddAzureAppConfiguration(options =>
+                        var azConfigSettings = config.Build();
+                        var azConfigConnection = azConfigSettings.GetConnectionString("AppConfig");
+                        if (!string.IsNullOrEmpty(azConfigConnection))
                         {
-                            options.Connect(endpoint, new DefaultAzureCredential());
-                        });
+                            // Use the connection string if it is available.
+                            config.AddAzureAppConfiguration(azConfigConnection);
+                        }
+                        else if (Uri.TryCreate(azConfigSettings["Endpoints:AppConfig"], UriKind.Absolute, out var endpoint))
+                        {
+                            // Use Azure Active Directory authentication.
+                            config.AddAzureAppConfiguration(options =>
+                            {
+                                options.Connect(endpoint, new DefaultAzureCredential());
+                            });
+                        }
                     }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

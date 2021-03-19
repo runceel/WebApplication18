@@ -6,6 +6,10 @@
     "appConfig1": {
       "type": "appConfig",
       "connectionId": "AppConfig"
+    },
+    "appInsights1": {
+      "type": "appInsights",
+      "connectionId": null
     }
   }
 }
